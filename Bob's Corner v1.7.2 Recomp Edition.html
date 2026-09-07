@@ -1,0 +1,929 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Bob's Tracker"/>
+<meta name="theme-color" content="#070b12"/>
+<title>Bob's Corner v1.7.2 Recomp Edition</title>
+<style>
+:root{
+  --bg:#070b12;--panel:#111827;--panel2:#0b1220;--soft:#1f2937;--line:#2f3a4c;
+  --text:#e5e7eb;--muted:#94a3b8;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;
+  --orange:#f59e0b;--purple:#a855f7;--cyan:#06b6d4;--pink:#ec4899;
+}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#14213d 0,#070b12 45%,#030712 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{position:sticky;top:0;z-index:10;background:#070b12e8;backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:14px 14px 10px}
+h1{font-size:24px;margin:0;font-weight:900;letter-spacing:.2px}.phase{font-size:13px;color:var(--muted);margin-top:3px}
+.tabs{display:flex;gap:8px;overflow-x:auto;margin-top:12px;padding-bottom:3px}
+.tab{border:0;border-radius:12px;background:#1f2937;color:#d1d5db;padding:10px 12px;font-weight:800;white-space:nowrap}
+.tab.active{background:var(--blue);color:white}
+main{max-width:1050px;margin:0 auto;padding:14px 14px 70px}
+.card{background:linear-gradient(180deg,#111827,#0b1220);border:1px solid var(--line);border-radius:18px;padding:15px;margin-bottom:14px;box-shadow:0 10px 30px #0006}
+h2{font-size:18px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.stat{background:#050914;border:1px solid #263244;border-radius:14px;padding:12px}.stat .label{font-size:12px;color:var(--muted)}.stat .value{font-size:26px;font-weight:950;margin-top:4px}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 9px;background:#172554;color:#bfdbfe;font-size:12px;font-weight:800;margin:3px}
+.green{color:var(--green)}.orange{color:var(--orange)}.red{color:var(--red)}.blue{color:var(--blue)}.purple{color:var(--purple)}.cyan{color:var(--cyan)}
+label{display:block;font-size:12px;color:var(--muted);margin:10px 0 5px}
+input,select,textarea,button{width:100%;border:1px solid var(--line);border-radius:12px;background:#050914;color:var(--text);padding:11px;font-size:15px}
+textarea{min-height:78px}
+button{background:var(--blue);border:0;font-weight:900;cursor:pointer}
+button.secondary{background:#263244;color:#e5e7eb}button.danger{background:var(--red);color:white}button.greenbtn{background:var(--green);color:#001b09}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px}
+.daybar{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:8px 0 12px}
+.day{border:1px solid var(--line);border-radius:14px;background:#050914;padding:10px 4px;text-align:center;font-weight:900;font-size:13px}
+.day small{display:block;color:var(--muted);font-weight:700;font-size:11px;margin-top:2px}.day.active{outline:2px solid currentColor}
+.exercise{border:1px solid var(--line);border-radius:16px;margin:10px 0;background:#050914;overflow:hidden}
+.exhead{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:12px;border-bottom:1px solid #1f2937}
+.exname{font-weight:950}.hint{font-size:12px;color:var(--muted)}
+.sets{padding:10px}
+.setrow{display:grid;grid-template-columns:0.5fr 1fr 1fr 1.1fr 0.65fr;gap:6px;align-items:end;margin-bottom:7px}
+.setrow span{font-size:11px;color:var(--muted);padding-bottom:10px;text-align:center}
+.setrow select{padding:10px 4px;font-size:13px}
+.done{background:#064e3b!important;color:#bbf7d0!important;border:1px solid #15803d!important}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{border-bottom:1px solid #263244;padding:8px;text-align:left;vertical-align:top}th{color:#bfdbfe}
+.hidden{display:none}.tiny{font-size:12px;color:var(--muted);line-height:1.35}
+.timer{position:sticky;top:93px;z-index:8;margin:-4px -14px 14px;padding:12px;background:var(--blue);text-align:center;font-weight:950;color:white;box-shadow:0 6px 20px #000a}
+canvas{width:100%;height:210px;background:#050914;border:1px solid var(--line);border-radius:14px}
+.coachbox{white-space:pre-wrap;background:#050914;border:1px solid var(--line);border-radius:14px;padding:12px;color:#dbeafe;font-size:13px;line-height:1.45}
+.metricline{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:8px}.metricline strong{font-size:18px}.notice{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid #92400e;background:#451a03;color:#fde68a;font-size:13px}.goodnotice{border-color:#166534;background:#052e16;color:#bbf7d0}.pr{display:inline-flex;align-items:center;border-radius:999px;padding:3px 7px;background:#3b0764;color:#e9d5ff;font-size:11px;font-weight:900;margin-left:6px}.exstats{font-size:12px;color:#bfdbfe;margin-top:5px;line-height:1.35}.versionchip{float:right;font-size:11px;color:#bfdbfe;background:#172554;border:1px solid #1d4ed8;padding:5px 8px;border-radius:999px}
+.progressCanvas{width:100%;height:300px;background:#050914;border:1px solid var(--line);border-radius:14px;touch-action:manipulation}
+.progressDetail{margin-top:10px;padding:10px 12px;border-radius:12px;background:#0b1220;border:1px solid #263244;color:#dbeafe;font-size:13px}
+.progressStats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:9px;margin:10px 0}
+.miniStat{background:#050914;border:1px solid #263244;border-radius:12px;padding:10px}
+.miniStat .label{font-size:11px;color:var(--muted)}.miniStat .value{font-size:20px;font-weight:900;margin-top:3px}
+.legendRow{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0 4px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Bob's Corner &#x1F9EA;</h1>
+  <div class="phase">Goal: Build Muscle &bull; Recomp & Maintain Leanness &bull; v1.7.2 Recomp Edition</div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('dash',this)">&#x1F3E0; Dashboard</button>
+    <button class="tab" onclick="showTab('progress',this)">&#x1F4C8; Progress</button>
+    <button class="tab" onclick="showTab('train',this)">&#x1F3CB;&#xFE0F; Training</button>
+    <button class="tab" onclick="showTab('body',this)">&#x1F4CF; Body</button>
+    <button class="tab" onclick="showTab('nutrition',this)">&#x1F957; Nutrition</button>
+    <button class="tab" onclick="showTab('history',this)">&#x1F4CA; History</button>
+  </div>
+</header>
+
+<main>
+<section id="dash" class="screen">
+  <div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <h2>Recomp & Maintenance Dashboard</h2>
+      <div style="display:flex;gap:6px">
+        <button class="greenbtn" style="width:auto;padding:6px 12px;font-size:12px" onclick="syncToGoogleDrive(false)">&#x2601;&#xFE0F; Sync</button>
+        <button class="secondary" style="width:auto;padding:6px 12px;font-size:12px" onclick="restoreFromGoogleDrive()">&#x1F4E5; Restore</button>
+      </div>
+    </div>
+    <div>
+      <span class="badge">Calories 2500</span><span class="badge">Protein 180g</span><span class="badge">Fat 65g</span><span class="badge">Carbs 300g</span>
+    </div>
+    <div class="grid" style="margin-top:10px">
+      <div class="stat"><div class="label">Latest Weight</div><div class="value" id="dWeight">--</div></div>
+      <div class="stat"><div class="label">7-Day Avg Weight</div><div class="value" id="dAvg">--</div><div class="tiny" id="dWeightTrend"></div></div>
+      <div class="stat"><div class="label">Average Belly-Button Waist</div><div class="value" id="dWaist">--</div><div class="tiny" id="dWaistTrend"></div></div>
+      <div class="stat"><div class="label">Body Fat % (Navy Est.)</div><div class="value" id="dBodyFat">--</div><div class="tiny" id="dBodyFatTrend">Height: 5'8"</div></div>
+      <div class="stat"><div class="label">Workouts Logged</div><div class="value" id="dWorkouts">--</div><div class="tiny" id="dLastWorkout"></div></div>
+      <div class="stat"><div class="label">7-Day Avg Calories</div><div class="value" id="dCalories">--</div></div>
+      <div class="stat"><div class="label">Workout Streak</div><div class="value" id="dStreak">--</div><div class="tiny">consecutive logged sessions</div></div>
+      <div class="stat"><div class="label">Phase Days</div><div class="value" id="dCutDay">--</div><div class="tiny" id="dCutDates"></div></div>
+      <div class="stat"><div class="label">Net Weight vs Baseline</div><div class="value" id="dLost">--</div><div class="tiny" id="dStartWeight"></div></div>
+      <div class="stat"><div class="label">Target Zone</div><div class="value" id="dFinish">162-165 lb</div><div class="tiny" id="dRate">Recomp / Maintenance</div></div>
+    </div>
+    <div class="card" style="margin:14px 0 0;background:#050914">
+      <h2 style="margin-bottom:8px">7-Day Nutrition Averages</h2>
+      <div class="grid">
+        <div class="stat"><div class="label">Protein</div><div class="value" id="dProtein">--</div></div>
+        <div class="stat"><div class="label">Carbs</div><div class="value" id="dCarbs">--</div></div>
+        <div class="stat"><div class="label">Fat</div><div class="value" id="dFat">--</div></div>
+        <div class="stat"><div class="label">Steps</div><div class="value" id="dSteps">--</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Phase Setup</h2>
+    <div class="row4">
+      <div><label>Phase Start Date</label><input id="cutStartDate" type="date" value="2026-08-13"></div>
+      <div><label>Target Weight (lb)</label><input id="goalWeight" type="number" step="0.1" value="163"></div>
+      <div><label>Height (Inches)</label><input id="userHeight" type="number" step="0.5" value="68"></div>
+      <div><label>Target Weekly Loss/Gain</label><input id="plannedRate" type="number" step="0.1" value="0.0"></div>
+    </div>
+    <button class="secondary" onclick="saveCutSettings()">Save Phase Settings</button>
+    <p class="tiny">Configured for 2,500 kcal maintenance &amp; recomp at 68 inches (5 ft 8 in).</p>
+  </div>
+  <div class="card">
+    <h2>Coach Read</h2>
+    <div id="coachRead" class="coachbox">Log a few days and I&rsquo;ll generate a read here.</div>
+  </div>
+</section>
+
+<section id="progress" class="screen hidden">
+  <div class="card">
+    <h2>Weight Progress</h2>
+    <div class="progressStats">
+      <div class="miniStat"><div class="label">Starting Weight</div><div class="value" id="pWeightStart">--</div></div>
+      <div class="miniStat"><div class="label">Current Weight</div><div class="value" id="pWeightCurrent">--</div></div>
+      <div class="miniStat"><div class="label">Total Weight Change</div><div class="value" id="pWeightTotalLost">--</div></div>
+      <div class="miniStat"><div class="label">Current 7-Day Avg</div><div class="value" id="pWeightAvg">--</div></div>
+      <div class="miniStat"><div class="label">Change in Last 7 Days</div><div class="value" id="pWeightWeekly">--</div></div>
+      <div class="miniStat"><div class="label">Weekly Rate (Phase)</div><div class="value" id="pWeightAvgRate">--</div></div>
+    </div>
+    <div class="legendRow">Blue = daily weight &bull; Green = 7-day average</div>
+    <canvas id="progressWeightChart" class="progressCanvas" width="900" height="340"></canvas>
+    <div id="progressWeightDetail" class="progressDetail">Tap a point for date, daily weight, and 7-day average.</div>
+  </div>
+  <div class="card">
+    <h2>Waist & Body Fat Progress</h2>
+    <div class="progressStats">
+      <div class="miniStat"><div class="label">Starting Waist</div><div class="value" id="pWaistStart">--</div></div>
+      <div class="miniStat"><div class="label">Latest Waist Avg</div><div class="value" id="pWaistCurrent">--</div></div>
+      <div class="miniStat"><div class="label">Total Waist Lost</div><div class="value" id="pWaistLost">--</div></div>
+      <div class="miniStat"><div class="label">Starting BF %</div><div class="value" id="pBfStart">--</div></div>
+      <div class="miniStat"><div class="label">Current BF %</div><div class="value" id="pBfCurrent">--</div></div>
+      <div class="miniStat"><div class="label">Total BF Change</div><div class="value" id="pBfChange">--</div></div>
+    </div>
+    <canvas id="progressWaistChart" class="progressCanvas" width="900" height="340"></canvas>
+    <div id="progressWaistDetail" class="progressDetail">Tap a point for the exact date and waist average.</div>
+  </div>
+</section>
+
+<section id="train" class="screen hidden">
+  <div id="timer" class="timer hidden" onclick="cancelTimer()" style="cursor:pointer">Rest: <span id="timeLeft">90</span>s <small style="display:block;font-size:11px;font-weight:normal;opacity:0.8">(tap to skip)</small></div>
+  <div class="card">
+    <h2>Workout Log</h2>
+    <div class="daybar">
+      <div class="day active blue" onclick="setDay('Push',this)">Mon<small>Push</small></div>
+      <div class="day green" onclick="setDay('Pull',this)">Tue<small>Pull</small></div>
+      <div class="day purple" onclick="setDay('Legs A',this)">Wed<small>Legs A</small></div>
+      <div class="day red" onclick="setDay('Upper',this)">Thu<small>Upper</small></div>
+      <div class="day orange" onclick="setDay('Arms + Core',this)">Fri<small>Arms + Core</small></div>
+    </div>
+    <div class="row">
+      <div><label>Date</label><input id="workDate" type="date"></div>
+      <div><label>Workout</label><select id="workType" onchange="renderWorkout()"></select></div>
+    </div>
+    <div id="workoutBox"></div><div class="notice goodnotice">Training Note: 5-day split. Use a controlled 3-second lowering phase and explosive lift. Rest 90 seconds on compound lifts and 60 seconds on isolation work. Most sets should finish around 1&ndash;2 RIR; the final isolation set can go to failure. Weekends are fully off.</div>
+    <label>Notes</label><textarea id="workNotes" placeholder="Energy, pump, soreness, performance..."></textarea>
+    <button onclick="saveWorkout()">Finish & Save Workout</button>
+  </div>
+</section>
+
+<section id="body" class="screen hidden">
+  <div class="card">
+    <h2>Daily Body Check-In</h2>
+    <div class="row">
+      <div><label>Date</label><input id="bodyDate" type="date"></div>
+      <div><label>Weight (lb)</label><input id="weight" type="number" step="0.1" placeholder="163.4"></div>
+    </div>
+    <label>Friday Morning Check-In &mdash; Neck & 3 Relaxed Waist Measurements</label>
+    <div class="row4">
+      <div><input id="neck" type="number" step="0.01" placeholder="Neck (in)" oninput="updateWaistAverage()"></div>
+      <div><input id="waist1" type="number" step="0.01" placeholder="Waist 1" oninput="updateWaistAverage()"></div>
+      <div><input id="waist2" type="number" step="0.01" placeholder="Waist 2" oninput="updateWaistAverage()"></div>
+      <div><input id="waist3" type="number" step="0.01" placeholder="Waist 3" oninput="updateWaistAverage()"></div>
+    </div>
+
+    <div class="metricline" style="margin-top:12px">
+      <span class="tiny">Waist Avg: <strong id="waistAverage" style="font-size:15px">--</strong></span>
+      <span class="tiny">Navy BF: <strong id="bfCalculated" class="green" style="font-size:17px">--</strong></span>
+    </div>
+    <div id="waistWarning" class="notice hidden"></div>
+    <button style="margin-top:12px" onclick="saveBody()">Save Body Check-In</button>
+  </div>
+  <div class="card"><h2>Weight Trend</h2><canvas id="weightChart" width="800" height="260"></canvas></div>
+  <div class="card"><h2>Waist Trend</h2><canvas id="waistChart" width="800" height="260"></canvas></div>
+  <div class="card"><h2>Body Fat % Trend (Navy)</h2><canvas id="bodyFatChart" width="800" height="260"></canvas></div>
+</section>
+
+<section id="nutrition" class="screen hidden">
+  <div class="card">
+    <h2>Nutrition Log</h2>
+    <div class="row">
+      <div><label>Date</label><input id="nutDate" type="date"></div>
+      <div><label>Calories</label><input id="calories" type="number" value="2500"></div>
+    </div>
+    <div class="row3">
+      <div><label>Protein</label><input id="protein" type="number" value="180"></div>
+      <div><label>Fat</label><input id="fat" type="number" value="65"></div>
+      <div><label>Carbs</label><input id="carbs" type="number" value="300"></div>
+    </div>
+    <div><label>Steps</label><input id="steps" type="number" placeholder="10000"></div>
+    <label>Nutrition Notes</label><textarea id="nutNotes" placeholder="Energy, hunger, pumps, hydration..."></textarea>
+    <button onclick="saveNutrition()">Save Nutrition</button>
+    <p class="tiny">Targeting 2500 kcal maintenance: 180g protein, 65g fat, 300g carbs.</p>
+  </div>
+</section>
+
+<section id="history" class="screen hidden">
+  <div class="card">
+    <h2>Google Drive Cloud Sync</h2>
+    <div class="row" style="margin-bottom:10px">
+      <button class="greenbtn" onclick="syncToGoogleDrive(false)">&#x2601;&#xFE0F; Sync to Google Drive</button>
+      <button class="secondary" onclick="restoreFromGoogleDrive()">&#x1F4E5; Restore from Google Drive</button>
+    </div>
+    <p class="tiny">Syncs your data directly with <code>bobs_corner_backup.json</code> on your Google Drive. Auto-sync triggers on every log save.</p>
+  </div>
+  <div class="card">
+    <h2>Data Backup (File)</h2>
+    <div class="grid" style="margin-bottom:8px">
+      <button class="secondary" onclick="exportData()">Backup Everything (File)</button>
+      <button class="secondary" onclick="quickDownloadBackup()">Download Backup Copy</button>
+      <button class="secondary" onclick="importDataFromFile()">Restore from File</button>
+      <button class="danger" onclick="clearAll()">Clear All Data</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Recent History</h2>
+    <table id="histTable"><thead><tr><th>Date</th><th>Workout</th><th>Weight</th><th>Waist</th><th>Body Fat</th><th>Nutrition</th><th>Steps</th><th>Notes</th></tr></thead><tbody></tbody></table>
+  </div>
+  <div class="card">
+    <h2>Version 1.7.2 Recomp Edition Changelog <span class="versionchip">Bob's Corner</span></h2>
+    <div class="tiny">&bull; Swapped Friday's final triceps movement to Triceps Extension[cite: 1]<br>&bull; Streamlined tracking to Waist, Neck, and Navy Body Fat (removed caliper inputs and skinfold stats)[cite: 1]<br>&bull; Preserved 5-day split structure, 2,500 kcal maintenance recomposition profile, and Google Drive auto-sync[cite: 1]</div>
+  </div>
+</section>
+</main>
+
+<script>
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyBd8IqEwd0-Vrzjqxpe_T289il0SNyjVAebb6Tqku1Ee0_dwn_i1kvcUSjsml9-RVi/exec";
+
+async function syncToGoogleDrive(silent=false) {
+  try {
+    const payload = JSON.stringify(data());
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: payload,
+      mode: "no-cors"
+    });
+    if(!silent) alert("\u2601\uFE0F Synced to Google Drive successfully!");
+  } catch (err) {
+    if(!silent) alert("Sync error: " + err.message);
+  }
+}
+
+function restoreFromGoogleDrive() {
+  const scriptId = "drive_jsonp_loader";
+  const existing = document.getElementById(scriptId);
+  if (existing) existing.remove();
+
+  window.handleDriveRestore = function(remoteData) {
+    if (remoteData && (remoteData.workouts || remoteData.body || remoteData.nutrition)) {
+      localStorage.setItem("recompCoach", JSON.stringify(remoteData));
+      renderAll();
+      alert("\uD83D\uDCE5 Data restored from Google Drive successfully!");
+    } else {
+      alert("No valid backup found on Google Drive. Perform a sync first.");
+    }
+    const s = document.getElementById(scriptId);
+    if (s) s.remove();
+    delete window.handleDriveRestore;
+  };
+
+  const script = document.createElement("script");
+  script.id = scriptId;
+  script.src = `${GOOGLE_SCRIPT_URL}?callback=handleDriveRestore&t=${Date.now()}`;
+  script.onerror = function() {
+    alert("Could not connect to Google Drive. Check your internet connection or deployment permissions.");
+  };
+  document.body.appendChild(script);
+}
+
+const targets={calories:2500, protein:180, fat:65, carbs:300};
+const workouts={
+"Push":[
+ {name:"Loaded Decline Crunch \u21933s",target:"3 sets \u2022 10-12 reps \u2022 anchor hips, roll ribs to belt",rest:60},
+ {name:"Machine Chest Press \u21933s \u2022 Forward Path",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"DB Shoulder Press \u21933s \u2022 Bench Position 6",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"Cable Triceps Pushdown \u21933s",target:"3 sets \u2022 10-15 reps",rest:60},
+ {name:"DB Lateral Raise \u21933s",target:"3 sets \u2022 10-15 reps",rest:60}
+],
+"Pull":[
+ {name:"Wide-Grip Lat Pulldown \u21933s",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"One-Arm DB Row \u21933s \u2022 Bench Position 1",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"Incline DB Curl \u21933s \u2022 Bench Position 3",target:"3 sets \u2022 10-15 reps",rest:60},
+ {name:"DB Shrugs \u21932s",target:"3 sets \u2022 10-15 reps \u2022 1s up, brief squeeze, 2s down",rest:60}
+],
+"Legs A":[
+ {name:"Loaded Decline Crunch \u21933s",target:"3 sets \u2022 10-12 reps \u2022 anchor hips, roll ribs to belt",rest:60},
+ {name:"Goblet Squat \u21933s",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"Romanian Deadlift \u21933s",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"DB Glute Bridge \u21933s",target:"3 sets \u2022 8-12 reps \u2022 squeeze glutes at top",rest:90},
+ {name:"Standing DB Calf Raise \u21933s",target:"2 sets \u2022 20 reps \u2022 both calves each set \u2022 Set 1 DB right hand, Set 2 DB left hand",rest:60,sets:2,setLabels:["Right hand","Left hand"]}
+],
+"Upper":[
+ {name:"Incline DB Bench Press \u21933s \u2022 Bench Position 3",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"Underhand Lat Pulldown \u21933s",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"Chest Supported DB Row \u21933s \u2022 Bench Position 3",target:"3 sets \u2022 8-12 reps",rest:90},
+ {name:"DB Lateral Raise \u21933s",target:"3 sets \u2022 10-15 reps",rest:60}
+],
+"Arms + Core":[
+ {name:"Loaded Decline Crunch \u21933s",target:"3 sets \u2022 10-12 reps \u2022 anchor hips, roll ribs to belt",rest:60},
+ {name:"DB Farmers Carry",target:"3 sets \u2022 40-45 steps \u2022 target 35s in each hand",rest:60},
+ {name:"Hanging Knee Raise",target:"3 sets \u2022 10-12 reps \u2022 strict tuck, no swing",rest:60},
+ {name:"Incline DB Curl \u21933s \u2022 Bench Position 3",target:"3 sets \u2022 10-15 reps",rest:60},
+ {name:"Tricep Extension \u21933s",target:"3 sets \u2022 10-15 reps \u2022 full elbow flexion and controlled lock",rest:60}
+]
+};
+function today(){return new Date().toISOString().slice(0,10)}
+["workDate","bodyDate","nutDate"].forEach(id=>document.getElementById(id).value=today());
+const workType=document.getElementById("workType");
+Object.keys(workouts).forEach(k=>{let o=document.createElement("option");o.textContent=k;workType.appendChild(o)});
+function data(){const d=JSON.parse(localStorage.getItem("recompCoach")||'{"workouts":[],"body":[],"nutrition":[]}');d.settings=d.settings||{cutStartDate:"2026-08-13",goalWeight:163,plannedRate:0.0,height:68};return d}
+function save(d){localStorage.setItem("recompCoach",JSON.stringify(d));renderAll();syncToGoogleDrive(true)}
+function showTab(id,btn){document.querySelectorAll(".screen").forEach(s=>s.classList.add("hidden"));document.getElementById(id).classList.remove("hidden");document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));btn.classList.add("active");renderAll()}
+function setDay(type,el){document.querySelectorAll(".day").forEach(d=>d.classList.remove("active"));el.classList.add("active");workType.value=type;renderWorkout()}
+
+function baseExerciseName(name){
+ return String(name||"").replace(/\s*\u2193\d+s/g,"").replace(/\s*\u2022\s*Bench Position\s*\d+/g,"").trim();
+}
+function lastWorkoutOfType(type){
+ const matches=data().workouts.filter(w=>w.type===type).sort((a,b)=>a.date.localeCompare(b.date));
+ return matches.at(-1)||null;
+}
+function previousExerciseSets(type,exerciseName,index){
+ const d=data(),base=baseExerciseName(exerciseName);
+ const last=lastWorkoutOfType(type);
+ if(last&&Array.isArray(last.ex)){
+   const match=last.ex.find(e=>baseExerciseName(e.name)===base);
+   if(match&&Array.isArray(match.sets)) return match.sets;
+ }
+ const matches=[...d.workouts].sort((a,b)=>b.date.localeCompare(a.date))
+   .map(w=>(w.ex||[]).find(e=>baseExerciseName(e.name)===base))
+   .filter(Boolean);
+ return (matches[0]&&Array.isArray(matches[0].sets))?matches[0].sets:[];
+}
+function setDisplay(set){
+ if(!set) return "";
+ const w=set.weight??set.w??"";
+ const r=set.reps??set.r??"";
+ const rir=set.rir?` (${set.rir})`:"";
+ if(w!==""&&r!=="") return `${w}\u00D7${r}${rir}`;
+ if(w!=="") return `${w}`;
+ if(r!=="") return `${r}`;
+ return "";
+}
+
+function renderWorkout(){
+ const box=document.getElementById("workoutBox"); box.innerHTML="";
+ const type=workType.value;
+ workouts[type].forEach((ex,i)=>{
+  const prevSets=previousExerciseSets(type,ex.name,i);
+  const h=exerciseHistory(ex.name,data().workouts);
+  const lastSetText=prevSets.map(setDisplay).filter(Boolean).join(" \u2022 ");
+  const sourceLabel=lastWorkoutOfType(type)?`Last ${type}`:"Previous exercise";
+  const div=document.createElement("div");div.className="exercise";
+  div.innerHTML=`<div class="exhead"><div><div class="exname">${ex.name} <span id="pr_badge_${i}"></span></div><div class="hint">${ex.target}</div><div class="exstats">${lastSetText?`${sourceLabel}: ${lastSetText}`:"No previous sets for this exercise"}${h.best?` \u2022 Best set: ${h.best.weight} \u00D7 ${h.best.reps}`:""}</div></div><button class="secondary" style="width:80px" onclick="startRest(${ex.rest})">${ex.rest}s</button></div>
+  <div class="sets">
+  <div class="setrow"><span>Set</span><span>Weight</span><span>Reps/Sec</span><span>RIR / Effort</span><span>Done</span></div>
+  ${Array.from({length:ex.sets||3},(_,idx)=>{
+    const n=idx+1;
+    const p=prevSets[idx]||{};
+    const pw=p.weight??p.w??"";
+    const pr=p.reps??p.r??"";
+    const prir=p.rir||"";
+    const setLabel=(ex.setLabels&&ex.setLabels[idx])?ex.setLabels[idx]:n;
+    return `<div class="setrow">
+      <input value="${setLabel}" disabled>
+      <input id="w_${i}_${n}" type="number" step="0.5" value="${pw}" oninput="checkPR(${i},'${ex.name}')">
+      <input id="r_${i}_${n}" type="number" value="${pr}" oninput="checkPR(${i},'${ex.name}')">
+      <select id="rir_${i}_${n}">
+        <option value="" ${prir===""?"selected":""}>- RIR -</option>
+        <option value="2 RIR" ${prir==="2 RIR"?"selected":""}>2 RIR</option>
+        <option value="1 RIR" ${prir==="1 RIR"?"selected":""}>1 RIR</option>
+        <option value="0 RIR" ${prir==="0 RIR"?"selected":""}>0 RIR (Failure)</option>
+        <option value="3+ RIR" ${prir==="3+ RIR"?"selected":""}>3+ RIR (Warmup)</option>
+      </select>
+      <button class="secondary" onclick="handleSetDone(this, ${ex.rest}, ${i}, '${ex.name}')">&#x2713;</button>
+    </div>`;
+  }).join("")}
+  </div>`;
+  box.appendChild(div);
+  checkPR(i, ex.name);
+ });
+}
+
+function checkPR(exIndex, exName) {
+  const h = exerciseHistory(exName, data().workouts);
+  const badge = document.getElementById(`pr_badge_${exIndex}`);
+  if (!badge) return;
+  
+  let currentBestScore = 0;
+  const numSets = (workouts[workType.value][exIndex] && workouts[workType.value][exIndex].sets) || 3;
+  for (let n = 1; n <= numSets; n++) {
+    const w = numeric(val(`w_${exIndex}_${n}`));
+    const r = numeric(val(`r_${exIndex}_${n}`));
+    if (w !== null && r !== null && (w * r > currentBestScore)) {
+      currentBestScore = w * r;
+    }
+  }
+
+  if (h.best && currentBestScore > h.best.score && currentBestScore > 0) {
+    badge.innerHTML = `<span class="pr">&#x2B50; PR Set!</span>`;
+  } else {
+    badge.innerHTML = "";
+  }
+}
+
+function handleSetDone(btn, restSeconds, exIndex, exName) {
+  const isDone = btn.classList.toggle('done');
+  if (isDone) {
+    startRest(restSeconds);
+  }
+  checkPR(exIndex, exName);
+}
+
+let timerInt=null;
+let audioCtx=null;
+
+function playTimerBeep() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    
+    const now = audioCtx.currentTime;
+    
+    const osc1 = audioCtx.createOscillator();
+    const gain1 = audioCtx.createGain();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(880, now);
+    gain1.gain.setValueAtTime(0.95, now);
+    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+    osc1.connect(gain1);
+    gain1.connect(audioCtx.destination);
+    osc1.start(now);
+    osc1.stop(now + 0.3);
+
+    const osc2 = audioCtx.createOscillator();
+    const gain2 = audioCtx.createGain();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(1320, now + 0.15);
+    gain2.gain.setValueAtTime(0.95, now + 0.15);
+    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.65);
+    osc2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    osc2.start(now + 0.15);
+    osc2.stop(now + 0.65);
+  } catch(e){}
+}
+
+function startRest(seconds){
+  clearInterval(timerInt);
+  let t=seconds;
+  const timerEl = document.getElementById("timer");
+  timerEl.classList.remove("hidden");
+  document.getElementById("timeLeft").textContent=t;
+  
+  timerInt=setInterval(()=>{
+    t--;
+    document.getElementById("timeLeft").textContent=t;
+    if(t<=0){
+      clearInterval(timerInt);
+      timerEl.classList.add("hidden");
+      playTimerBeep();
+      setTimeout(playTimerBeep, 400);
+      if (navigator.vibrate) {
+        navigator.vibrate([250, 100, 250, 100, 350]);
+      }
+    }
+  },1000);
+}
+
+function cancelTimer() {
+  clearInterval(timerInt);
+  document.getElementById("timer").classList.add("hidden");
+}
+
+function numeric(v){const n=parseFloat(v);return Number.isFinite(n)?n:null}
+function exerciseHistory(name,allWorkouts){
+ const sets=[],base=baseExerciseName(name);
+ allWorkouts.forEach(w=>(w.ex||[]).filter(e=>baseExerciseName(e.name)===base).forEach(e=>(e.sets||[]).forEach(s=>{
+  const weight=numeric(s.weight??s.w),reps=numeric(s.reps??s.r);
+  if(weight!==null&&reps!==null)sets.push({weight,reps,date:w.date,score:weight*reps});
+ })));
+ sets.sort((a,b)=>a.date.localeCompare(b.date));
+ const last=sets.at(-1)||null;
+ const best=sets.length?[...sets].sort((a,b)=>b.score-a.score||b.weight-a.weight)[0]:null;
+ return {last,best};
+}
+
+function calcNavyBodyFat(waistInches, neckInches, heightInches=68){
+  if(!waistInches || !neckInches || waistInches <= neckInches) return null;
+  const bf = 86.010 * Math.log10(waistInches - neckInches) - 70.041 * Math.log10(heightInches) + 36.76;
+  return Number.isFinite(bf) ? Math.max(3, Math.min(50, bf)) : null;
+}
+
+function updateWaistAverage(){
+  const values=["waist1","waist2","waist3"].map(id=>numeric(val(id))).filter(v=>v!==null);
+  const avgValue=values.length===3?avg(values):null;
+  document.getElementById("waistAverage").textContent=avgValue?avgValue.toFixed(2)+'"':"--";
+  
+  const neckVal = numeric(val("neck"));
+  const hVal = numeric(val("userHeight")) || 68;
+  const bf = (avgValue && neckVal) ? calcNavyBodyFat(avgValue, neckVal, hVal) : null;
+  document.getElementById("bfCalculated").textContent = bf ? bf.toFixed(1) + "%" : "--";
+
+  const warning=document.getElementById("waistWarning");
+  warning.classList.add("hidden","goodnotice");
+  if(values.length===3){
+    const spread=Math.max(...values)-Math.min(...values);
+    warning.classList.remove("hidden");
+    if(spread>0.35){
+      warning.textContent=`Measurements differ by ${spread.toFixed(2)}". Retake them with the same tape position and light tension.`;
+    }else{
+      warning.classList.add("goodnotice");
+      warning.textContent=`Consistent waist set. Spread: ${spread.toFixed(2)}".`;
+    }
+  }
+}
+
+function saveWorkout(){
+ const d=data(), type=workType.value;
+ let totalTonnage = 0;
+ const ex=workouts[type].map((e,i)=>({
+   name:e.name,
+   sets:Array.from({length:e.sets||3},(_,idx)=>{
+     const n=idx+1;
+     const w = val(`w_${i}_${n}`), r = val(`r_${i}_${n}`), rir = val(`rir_${i}_${n}`);
+     if (numeric(w) && numeric(r)) {
+       totalTonnage += (numeric(w) * numeric(r));
+     }
+     return {weight:w, reps:r, rir:rir};
+   }).filter(s=>s.weight||s.reps)
+ }));
+ d.workouts.push({date:val("workDate"),type,ex,notes:val("workNotes")});
+ save(d);
+ alert(`\u2705 Workout saved!\nSession Tonnage: ${Math.round(totalTonnage).toLocaleString()} lb lifted.\n\u2601\uFE0F Cloud sync updated.`);
+}
+
+function saveBody(){
+  const d=data();
+  const waistValues=["waist1","waist2","waist3"].map(id=>numeric(val(id)));
+  const completeWaist=waistValues.every(v=>v!==null);
+  if(waistValues.some(v=>v!==null)&&!completeWaist){alert("Enter all three waist measurements, or leave all three blank.");return}
+  const waistAvg=completeWaist?avg(waistValues):null;
+
+  const neckVal=numeric(val("neck"));
+  const hVal = numeric(d.settings?.height) || 68;
+  const bfVal = (waistAvg && neckVal) ? calcNavyBodyFat(waistAvg, neckVal, hVal) : null;
+  
+  d.body.push({
+    date:val("bodyDate"),
+    weight:val("weight"),
+    waist:waistAvg!==null?waistAvg.toFixed(2):"",
+    waist1:completeWaist?waistValues[0]:"",
+    waist2:completeWaist?waistValues[1]:"",
+    waist3:completeWaist?waistValues[2]:"",
+    neck:neckVal!==null?neckVal:"",
+    bodyfat:bfVal!==null?bfVal.toFixed(1):""
+  });
+  save(d);
+  alert("\u2705 Body check-in saved!\n\u2601\uFE0F Cloud sync updated.");
+  ["weight","neck","waist1","waist2","waist3"].forEach(id=>document.getElementById(id).value="");
+  updateWaistAverage();
+}
+
+function saveNutrition(){
+  const d=data();
+  let c=val("carbs");
+  if(!c){c=Math.round((val("calories")-val("protein")*4-val("fat")*9)/4)}
+  d.nutrition.push({date:val("nutDate"),calories:val("calories"),protein:val("protein"),fat:val("fat"),carbs:c,steps:val("steps"),notes:val("nutNotes")});
+  save(d);
+  alert("\u2705 Nutrition saved!\n\u2601\uFE0F Cloud sync updated.");
+  ["carbs","steps","nutNotes"].forEach(id=>document.getElementById(id).value="");
+}
+
+function val(id){return document.getElementById(id).value}
+function avg(arr){let n=arr.map(Number).filter(x=>!isNaN(x)&&x>0);return n.length?n.reduce((a,b)=>a+b,0)/n.length:null}
+function latestByDate(arr){return [...arr].sort((a,b)=>a.date.localeCompare(b.date)).at(-1)||{}}
+function seven(arr,key){return [...arr].sort((a,b)=>a.date.localeCompare(b.date)).slice(-7).map(x=>x[key])}
+function splitWeekAverages(arr,key){const sorted=[...arr].sort((a,b)=>a.date.localeCompare(b.date));const current=avg(sorted.slice(-7).map(x=>x[key]));const previous=avg(sorted.slice(-14,-7).map(x=>x[key]));return {current,previous}}
+function trendText(current,previous,unit){if(current===null||previous===null)return "Need another week";const diff=current-previous,eps=unit==='"'?0.05:0.15;if(Math.abs(diff)<eps)return "\u27A1\uFE0F stable";return `${diff>0?"\u2B06\uFE0F":"\u2B07\uFE0F"} ${Math.abs(diff).toFixed(unit==='"'?2:1)}${unit} vs prior 7 logs`}
+function daysSince(dateStr){if(!dateStr)return null;return Math.max(0,Math.floor((new Date(today()+"T12:00:00")-new Date(dateStr+"T12:00:00"))/86400000))}
+function workoutStreak(workouts){const dates=[...new Set(workouts.map(w=>w.date))].sort().reverse();if(!dates.length)return 0;let streak=1;for(let i=1;i<dates.length;i++){const gap=(new Date(dates[i-1]+"T12:00:00")-new Date(dates[i]+"T12:00:00"))/86400000;if(gap<=3)streak++;else break}return streak}
+function saveCutSettings(){const d=data();d.settings={cutStartDate:val("cutStartDate")||"2026-08-13",goalWeight:numeric(val("goalWeight"))||163,plannedRate:numeric(val("plannedRate"))||0.0,height:numeric(val("userHeight"))||68};save(d);alert("Phase settings saved")}
+function loadCutSettings(){const s=data().settings||{};document.getElementById("cutStartDate").value=s.cutStartDate||"2026-08-13";document.getElementById("goalWeight").value=s.goalWeight||163;document.getElementById("plannedRate").value=s.plannedRate||0.0;document.getElementById("userHeight").value=s.height||68}
+function dateDiffDays(a,b){return Math.floor((new Date(a+"T12:00:00")-new Date(b+"T12:00:00"))/86400000)}
+function addDays(dateStr,days){const d=new Date(dateStr+"T12:00:00");d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+function cutMetrics(d){
+ const s=d.settings||{cutStartDate:"2026-08-13",goalWeight:163,plannedRate:0.0,height:68};
+ const body=[...d.body].filter(x=>x.date>=s.cutStartDate&&numeric(x.weight)!==null).sort((a,b)=>a.date.localeCompare(b.date));
+ const start=body[0]||null;
+ const current=body.at(-1)||null;
+ const avgWeight=avg(body.slice(-7).map(x=>x.weight));
+ const todayStr=today();
+ const day=todayStr<s.cutStartDate?0:dateDiffDays(todayStr,s.cutStartDate)+1;
+ let lost=null,rate=null;
+ if(start&&avgWeight!==null){
+   lost=numeric(start.weight)-avgWeight;
+   const latestDate=current?current.date:start.date;
+   const elapsed=Math.max(1,dateDiffDays(latestDate,start.date));
+   rate=lost/(elapsed/7);
+ }
+ return {settings:s,start,current,avgWeight,day,lost,rate,finish:"162-165 lb"}
+}
+
+function renderDash(){
+  const d=data(),lb=latestByDate(d.body),av=avg(seven(d.body,"weight"));
+  const wt=splitWeekAverages(d.body,"weight"),wa=splitWeekAverages(d.body,"waist"),cal=avg(seven(d.nutrition,"calories")),pro=avg(seven(d.nutrition,"protein")),carb=avg(seven(d.nutrition,"carbs")),fatAvg=avg(seven(d.nutrition,"fat")),stepsAvg=avg(seven(d.nutrition,"steps"));
+  const lastWorkout=latestByDate(d.workouts),since=daysSince(lastWorkout.date),cm=cutMetrics(d);
+  
+  dWeight.textContent=lb.weight?lb.weight+" lb":"--";
+  dWaist.textContent=lb.waist?Number(lb.waist).toFixed(2)+'"':"--";
+  
+  const bfEntries = d.body.filter(x => numeric(x.bodyfat) !== null);
+  const latestBf = bfEntries.length ? numeric(bfEntries.at(-1).bodyfat) : null;
+  dBodyFat.textContent = latestBf !== null ? latestBf.toFixed(1) + "%" : "--";
+
+  dAvg.textContent=av?av.toFixed(1)+" lb":"--";
+  dWorkouts.textContent=d.workouts.length;
+  dWeightTrend.textContent=trendText(wt.current,wt.previous," lb");
+  dWaistTrend.textContent=trendText(wa.current,wa.previous,'"');
+  dCalories.textContent=cal?Math.round(cal):"--";
+  dStreak.textContent=workoutStreak(d.workouts);
+  dLastWorkout.textContent=lastWorkout.date?(since===0?"trained today":since===1?"last workout yesterday":`last workout ${since} days ago`):"no workouts yet";
+  dProtein.textContent=pro?Math.round(pro)+"g":"--";
+  dCarbs.textContent=carb?Math.round(carb)+"g":"--";
+  dFat.textContent=fatAvg?Math.round(fatAvg)+"g":"--";
+  dSteps.textContent=stepsAvg?Math.round(stepsAvg).toLocaleString():"--";
+  dCutDay.textContent=cm.day?`Day ${cm.day}`:"Recomp Active";
+  dCutDates.textContent=`Target: 2500 kcal maintenance`;
+  dLost.textContent=cm.lost!==null?`${Math.abs(cm.lost).toFixed(1)} lb ${cm.lost>=0?"drop":"gain"}`:"--";
+  dStartWeight.textContent=cm.start?`Baseline ${Number(cm.start.weight).toFixed(1)} lb \u2022 Current avg ${cm.avgWeight!==null?cm.avgWeight.toFixed(1):"--"} lb`:"Tracking recomp stability";
+  dFinish.textContent="162-165 lb";
+  dRate.textContent="Recomp / Maintenance";
+  coachRead.textContent=makeRead();
+}
+
+function makeRead(){
+  const d=data(),cm=cutMetrics(d),b=[...d.body].sort((a,b)=>a.date.localeCompare(b.date));
+  if(b.length<2)return `Phase active: Recomp & Maintenance (2500 kcal). Log body weight and waist to track lean mass and leanness.`;
+  const last=b.at(-1),av=avg(seven(b,"weight")),wt=splitWeekAverages(b,"weight"),wa=splitWeekAverages(b,"waist"),cal=avg(seven(d.nutrition,"calories")),pro=avg(seven(d.nutrition,"protein"));
+  let verdict="Hold 2500 calories. Weight stability with progressive overload in the gym drives clean recomposition.";
+  if(wt.current!==null&&wt.previous!==null){
+    const wd=wt.current-wt.previous;
+    if(wd>1.2)verdict="Scale jumped slightly faster than expected. Check sodium and water shifts from carb refueling before adjusting.";
+    else if(wd<-1.0)verdict="Weight is still dropping steadily. Consider adding 100-150 kcal if you want to hold pure maintenance.";
+    else verdict="Perfect maintenance balance. Muscle glycogen is saturated; push for PRs on all primary lifts.";
+  }
+  return `Current phase: RECOMP / MAINTENANCE
+Daily targets: ${targets.calories} calories \u2022 ${targets.protein}g protein \u2022 ${targets.fat}g fat \u2022 ${targets.carbs}g carbs
+Goal: Build muscle & preserve lean waistline
+
+Latest weight: ${last.weight||"--"}
+7-log average weight: ${av?av.toFixed(1):"--"}
+Latest averaged waist: ${last.waist?Number(last.waist).toFixed(2):"--"}
+7-log calorie average: ${cal?Math.round(cal):"--"}
+7-log protein average: ${pro?Math.round(pro):"--"}g
+
+Coach read:
+${verdict}`;
+}
+
+function drawChart(id,arr,key,label){
+ const c=document.getElementById(id); if(!c)return; const ctx=c.getContext("2d"); ctx.clearRect(0,0,c.width,c.height);
+ const vals=arr.map(x=>parseFloat(x[key])).filter(x=>!isNaN(x)); if(vals.length<2){ctx.fillStyle="#94a3b8";ctx.font="22px system-ui";ctx.fillText("Need more data",30,130);return}
+ const min=Math.min(...vals), max=Math.max(...vals), pad=(max-min)*.2||1; const lo=min-pad, hi=max+pad;
+ ctx.strokeStyle="#263244";ctx.lineWidth=1; for(let i=0;i<5;i++){let y=25+i*50;ctx.beginPath();ctx.moveTo(35,y);ctx.lineTo(780,y);ctx.stroke()}
+ ctx.strokeStyle=id==="weightChart"?"#3b82f6":id==="waistChart"?"#22c55e":"#a855f7";ctx.lineWidth=4;ctx.beginPath();
+ vals.forEach((v,i)=>{let x=45+i*(720/(vals.length-1));let y=235-((v-lo)/(hi-lo))*200;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});
+ ctx.stroke(); ctx.fillStyle="#e5e7eb";ctx.font="16px system-ui";ctx.fillText(label,35,22);ctx.fillText(vals.at(-1).toFixed(key==="waist"?2:1)+(key==="bodyfat"?"%":""),680,22);
+}
+
+function rollingAverageSeries(entries,key,windowSize=7){
+ const sorted=[...entries].filter(x=>numeric(x[key])!==null).sort((a,b)=>a.date.localeCompare(b.date));
+ return sorted.map((x,i)=>{
+   const slice=sorted.slice(Math.max(0,i-windowSize+1),i+1).map(v=>numeric(v[key])).filter(v=>v!==null);
+   return {...x,rolling:slice.length?avg(slice):null};
+ });
+}
+function progressBounds(values){
+ const clean=values.filter(v=>Number.isFinite(v));
+ if(!clean.length)return {lo:0,hi:1};
+ const min=Math.min(...clean),max=Math.max(...clean),span=max-min||1;
+ return {lo:min-span*.18,hi:max+span*.18};
+}
+function drawProgressWeight(){
+ const c=document.getElementById("progressWeightChart"); if(!c)return;
+ const ctx=c.getContext("2d"),d=data(),s=d.settings||{};
+ const body=[...d.body].filter(x=>x.date>=(s.cutStartDate||"2026-08-13")&&numeric(x.weight)!==null).sort((a,b)=>a.date.localeCompare(b.date));
+ ctx.clearRect(0,0,c.width,c.height);
+ if(body.length<2){ctx.fillStyle="#94a3b8";ctx.font="22px system-ui";ctx.fillText("Need more weight data",35,175);c._points=[];return}
+ const series=rollingAverageSeries(body,"weight",7);
+ const all=[...series.map(x=>numeric(x.weight)),...series.map(x=>x.rolling)].filter(Number.isFinite);
+ const {lo,hi}=progressBounds(all),L=60,R=c.width-30,T=30,B=c.height-45;
+ const X=i=>L+i*((R-L)/Math.max(1,series.length-1)),Y=v=>B-((v-lo)/(hi-lo))*(B-T);
+ ctx.strokeStyle="#263244";ctx.lineWidth=1;
+ for(let i=0;i<5;i++){const y=T+i*(B-T)/4;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.stroke()}
+ ctx.fillStyle="#94a3b8";ctx.font="13px system-ui";
+ for(let i=0;i<5;i++){const v=hi-i*(hi-lo)/4;ctx.fillText(v.toFixed(1),8,T+i*(B-T)/4+4)}
+ ctx.strokeStyle="#3b82f6";ctx.lineWidth=3;ctx.beginPath();
+ series.forEach((p,i)=>{const x=X(i),y=Y(numeric(p.weight));i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ ctx.strokeStyle="#22c55e";ctx.lineWidth=4;ctx.beginPath();
+ series.forEach((p,i)=>{const x=X(i),y=Y(p.rolling);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ c._points=series.map((p,i)=>({x:X(i),date:p.date,weight:numeric(p.weight),avg:p.rolling}));
+}
+function drawProgressWaist(){
+ const c=document.getElementById("progressWaistChart"); if(!c)return;
+ const ctx=c.getContext("2d"),d=data(),s=d.settings||{};
+ const body=[...d.body].filter(x=>x.date>=(s.cutStartDate||"2026-08-13")&&numeric(x.waist)!==null).sort((a,b)=>a.date.localeCompare(b.date));
+ ctx.clearRect(0,0,c.width,c.height);
+ if(body.length<2){ctx.fillStyle="#94a3b8";ctx.font="22px system-ui";ctx.fillText("Need more waist data",35,175);c._points=[];return}
+ const vals=body.map(x=>numeric(x.waist)),{lo,hi}=progressBounds(vals),L=60,R=c.width-30,T=30,B=c.height-45;
+ const X=i=>L+i*((R-L)/Math.max(1,body.length-1)),Y=v=>B-((v-lo)/(hi-lo))*(B-T);
+ ctx.strokeStyle="#263244";ctx.lineWidth=1;
+ for(let i=0;i<5;i++){const y=T+i*(B-T)/4;ctx.beginPath();ctx.moveTo(L,y);ctx.lineTo(R,y);ctx.stroke()}
+ ctx.strokeStyle="#22c55e";ctx.lineWidth=4;ctx.beginPath();
+ body.forEach((p,i)=>{const x=X(i),y=Y(numeric(p.waist));i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+ body.forEach((p,i)=>{ctx.beginPath();ctx.arc(X(i),Y(numeric(p.waist)),5,0,Math.PI*2);ctx.fillStyle="#22c55e";ctx.fill()});
+ c._points=body.map((p,i)=>({x:X(i),date:p.date,waist:numeric(p.waist)}));
+}
+function nearestProgressPoint(canvas,event){
+ const rect=canvas.getBoundingClientRect(),px=(event.clientX-rect.left)*(canvas.width/rect.width),pts=canvas._points||[];
+ if(!pts.length)return null;
+ return pts.reduce((a,b)=>Math.abs(b.x-px)<Math.abs(a.x-px)?b:a,pts[0]);
+}
+function attachProgressInteractions(){
+ const wc=document.getElementById("progressWeightChart"),wa=document.getElementById("progressWaistChart");
+ if(wc&&!wc.dataset.bound){wc.addEventListener("click",e=>{const p=nearestProgressPoint(wc,e);if(p)document.getElementById("progressWeightDetail").textContent=`${p.date} \u2022 Daily ${p.weight.toFixed(1)} lb \u2022 7-day avg ${p.avg.toFixed(1)} lb`});wc.dataset.bound="1"}
+ if(wa&&!wa.dataset.bound){wa.addEventListener("click",e=>{const p=nearestProgressPoint(wa,e);if(p)document.getElementById("progressWaistDetail").textContent=`${p.date} \u2022 Waist ${p.waist.toFixed(2)} in`});wa.dataset.bound="1"}
+}
+
+function renderProgress(){
+ const d=data(),s=d.settings||{},cm=cutMetrics(d);
+ const phaseStart = s.cutStartDate || "2026-08-13";
+ const cut=[...d.body].filter(x=>x.date>=phaseStart).sort((a,b)=>a.date.localeCompare(b.date));
+ const weights=cut.filter(x=>numeric(x.weight)!==null),waists=cut.filter(x=>numeric(x.waist)!==null),wt=splitWeekAverages(weights,"weight");
+ 
+ const startWeight = cm.start ? Number(cm.start.weight) : (weights.length ? Number(weights[0].weight) : null);
+ const currentWeight = weights.length ? Number(weights.at(-1).weight) : null;
+ const current7DayAvg = cm.avgWeight !== null ? cm.avgWeight : null;
+ 
+ const totalLostFromStart = (startWeight !== null && currentWeight !== null) ? (startWeight - currentWeight) : null;
+ const lostLast7 = (wt.current !== null && wt.previous !== null) ? (wt.previous - wt.current) : null;
+ 
+ let avg7DayLossEntireCut = null;
+ if (startWeight !== null && current7DayAvg !== null && weights.length && cm.start) {
+   const elapsedDays = Math.max(1, dateDiffDays(weights.at(-1).date, cm.start.date));
+   const elapsedWeeks = elapsedDays / 7;
+   const totalLostAvg = startWeight - current7DayAvg;
+   avg7DayLossEntireCut = elapsedWeeks > 0 ? (totalLostAvg / elapsedWeeks) : null;
+ }
+
+ document.getElementById("pWeightStart").textContent = startWeight !== null ? `${startWeight.toFixed(1)} lb` : "--";
+ document.getElementById("pWeightCurrent").textContent = currentWeight !== null ? `${currentWeight.toFixed(1)} lb` : "--";
+ 
+ if (totalLostFromStart !== null) {
+   document.getElementById("pWeightTotalLost").textContent = `${totalLostFromStart >= 0 ? "-" : "+"}${Math.abs(totalLostFromStart).toFixed(1)} lb`;
+ } else {
+   document.getElementById("pWeightTotalLost").textContent = "--";
+ }
+
+ document.getElementById("pWeightAvg").textContent = current7DayAvg !== null ? `${current7DayAvg.toFixed(1)} lb` : "--";
+ 
+ if (lostLast7 !== null) {
+   document.getElementById("pWeightWeekly").textContent = `${lostLast7 >= 0 ? "-" : "+"}${Math.abs(lostLast7).toFixed(1)} lb`;
+ } else {
+   document.getElementById("pWeightWeekly").textContent = "--";
+ }
+
+ if (avg7DayLossEntireCut !== null) {
+   document.getElementById("pWeightAvgRate").textContent = `${avg7DayLossEntireCut >= 0 ? "-" : "+"}${Math.abs(avg7DayLossEntireCut).toFixed(2)} lb/wk`;
+ } else {
+   document.getElementById("pWeightAvgRate").textContent = "--";
+ }
+
+ const ws=waists[0]||null,wc=waists.at(-1)||null;
+ document.getElementById("pWaistStart").textContent=ws?Number(ws.waist).toFixed(2)+'"':"--";
+ document.getElementById("pWaistCurrent").textContent=wc?Number(wc.waist).toFixed(2)+'"':"--";
+ document.getElementById("pWaistLost").textContent=(ws&&wc)?`${(Number(wc.waist)-Number(ws.waist)).toFixed(2)}"`:"--";
+
+ const bfEntries = cut.filter(x => numeric(x.bodyfat) !== null);
+ const startBf = bfEntries.length ? numeric(bfEntries[0].bodyfat) : null;
+ const currentBf = bfEntries.length ? numeric(bfEntries.at(-1).bodyfat) : null;
+
+ document.getElementById("pBfStart").textContent = startBf !== null ? `${startBf.toFixed(1)}%` : "--";
+ document.getElementById("pBfCurrent").textContent = currentBf !== null ? `${currentBf.toFixed(1)}%` : "--";
+ if (startBf !== null && currentBf !== null) {
+   const diff = currentBf - startBf;
+   document.getElementById("pBfChange").textContent = `${diff <= 0 ? "" : "+"}${diff.toFixed(1)}%`;
+ } else {
+   document.getElementById("pBfChange").textContent = "--";
+ }
+
+ drawProgressWeight();drawProgressWaist();attachProgressInteractions();
+}
+
+function workoutDetails(workoutsForDate){
+ if(!workoutsForDate.length) return "";
+ return workoutsForDate.map(w=>{
+   const details=w.ex.map(ex=>{
+     const sets=(ex.sets||[]).map(s=>{
+       const wt=s.weight||s.w||"";
+       const rp=s.reps||s.r||"";
+       const rir=s.rir?` (${s.rir})`:"";
+       if(wt && rp) return `${wt}\u00D7${rp}${rir}`;
+       if(wt) return `${wt}`;
+       if(rp) return `${rp}`;
+       return "";
+     }).filter(Boolean).join(", ");
+     return `${ex.name}: ${sets}`;
+   }).join("<br>");
+   return `<b>${w.type}</b><br>${details}`;
+ }).join("<hr style='border:0;border-top:1px solid #263244'>");
+}
+
+function renderHistory(){
+ const d=data(), tb=document.querySelector("#histTable tbody"); tb.innerHTML="";
+ const dates=[...new Set([...d.workouts.map(x=>x.date),...d.body.map(x=>x.date),...d.nutrition.map(x=>x.date)])].sort().reverse().slice(0,30);
+ dates.forEach(date=>{
+   const workoutsForDate=d.workouts.filter(x=>x.date===date);
+   const w=workoutDetails(workoutsForDate);
+   const b=d.body.filter(x=>x.date===date).at(-1)||{};
+   const n=d.nutrition.filter(x=>x.date===date).at(-1)||{};
+   const macroText=n.calories?`${n.calories} cal<br>P ${n.protein||""} / C ${n.carbs||""} / F ${n.fat||""}`:"";
+   const notes=[...workoutsForDate.map(x=>x.notes),n.notes].filter(Boolean).join(" | ");
+   const bfText = b.bodyfat ? `${b.bodyfat}%` : "";
+   tb.innerHTML+=`<tr><td>${date}</td><td>${w}</td><td>${b.weight||""}</td><td>${b.waist||""}</td><td>${bfText}</td><td>${macroText}</td><td>${n.steps?Number(n.steps).toLocaleString():""}</td><td>${notes}</td></tr>`;
+ });
+}
+
+let fileHandle=null;
+
+async function saveToChosenFile(){
+  const content=JSON.stringify(data(),null,2);
+  if(window.showSaveFilePicker){
+    try{
+      if(!fileHandle){
+        fileHandle=await window.showSaveFilePicker({
+          suggestedName:"robert-recomp-coach-data.json",
+          types:[{description:"JSON workout data",accept:{"application/json":[".json"]}}]
+        });
+      }
+      const writable=await fileHandle.createWritable();
+      await writable.write(content);
+      await writable.close();
+      alert("Saved to your chosen file.");
+      return;
+    }catch(e){
+      if(e.name==="AbortError")return;
+      alert("File save failed, using download backup instead.");
+    }
+  }
+  downloadBackup();
+}
+
+function downloadBackup(){
+  const blob=new Blob([JSON.stringify(data(),null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="robert-recomp-coach-backup.json";
+  a.click();
+}
+
+function exportData(){saveToChosenFile()}
+
+function importDataFromFile(){
+  const input=document.createElement("input");
+  input.type="file";
+  input.accept=".json,application/json";
+  input.onchange=async ()=>{
+    const file=input.files[0]; if(!file)return;
+    try{
+      const text=await file.text();
+      const parsed=JSON.parse(text);
+      if(!parsed.workouts||!parsed.body||!parsed.nutrition){
+        alert("That file does not look like a Recomp Coach backup.");
+        return;
+      }
+      localStorage.setItem("recompCoach",JSON.stringify(parsed));
+      renderAll();
+      alert("Backup loaded into the app.");
+    }catch(e){alert("Could not load that file.");}
+  };
+  input.click();
+}
+
+function quickDownloadBackup(){downloadBackup()}
+
+function clearAll(){if(confirm("Clear all saved data? Make sure you exported a backup first.")){localStorage.removeItem("recompCoach");renderAll()}}
+function renderAll(){
+  loadCutSettings();
+  renderDash();
+  renderHistory();
+  renderProgress();
+  const b=[...data().body].sort((a,b)=>a.date.localeCompare(b.date));
+  drawChart("weightChart",b,"weight","Weight");
+  drawChart("waistChart",b,"waist","Belly Button Waist");
+  drawChart("bodyFatChart",b,"bodyfat","Body Fat %");
+}
+renderWorkout();renderAll();
+</script>
+</body>
+</html>
